@@ -130,7 +130,7 @@ function registerButtonHandlers() {
                 'type': 'text',
                 'text': "EposTeam Liff ine girmiş bulunuyorsunuz"
             }]).then(function() {
-                window.alert('Message sent');
+                window.alert('Mesaj Gönderildi');
             }).catch(function(error) {
                 window.alert('Error sending message: ' + error);
             });
@@ -140,7 +140,7 @@ function registerButtonHandlers() {
     // get access token
     document.getElementById('getAccessToken').addEventListener('click', function() {
         if (!liff.isLoggedIn() && !liff.isInClient()) {
-            alert('To get an access token, you need to be logged in. Please tap the "login" button below and try again.');
+            alert('Bir erişim Tokeni almak için giriş yapmanız gerekir. Lütfen aşağıdaki "giriş" düğmesine dokunun ve tekrar deneyin.');
         } else {
             const accessToken = liff.getAccessToken();
             document.getElementById('accessTokenField').textContent = accessToken;

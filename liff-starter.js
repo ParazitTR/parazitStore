@@ -1,194 +1,237 @@
-window.onload = function (e) {
-    liff.init(function () {
-        getP();
-    });
+window.onload = function() {
+    const useNodeJS = false;   // if you are not using a node server, set this value to false
+    const defaultLiffId = "1655216205-OJJXmxyN";   // change the default LIFF value if you are not using a node server
+
+    // DO NOT CHANGE THIS
+    let myLiffId = "";
+
+    // if node is used, fetch the environment variable and pass it to the LIFF method
+    // otherwise, pass defaultLiffId
+    if (useNodeJS) {
+        fetch('/send-id')
+            .then(function(reqResponse) {
+                return reqResponse.json();
+            })
+            .then(function(jsonResponse) {
+                myLiffId = jsonResponse.id;
+                initializeLiffOrDie(myLiffId);
+            })
+            .catch(function(error) {
+                document.getElementById("liffAppContent").classList.add('hidden');
+                document.getElementById("nodeLiffIdErrorMessage").classList.remove('hidden');
+            });
+    } else {
+        myLiffId = defaultLiffId;
+        initializeLiffOrDie(myLiffId);
+    }
 };
 
-function getP(){
-    var tipe = getParameterByName('type')
-    if (!tipe) {
-        document.getElementById('textx').addEventListener('click', function () {
-            liff.sendMessages([{
-                type: 'text',
-                text: atob('bGluZTovL2FwcC8xNjAyNjg3MzA4LUdYcTRWdms5P3R5cGU9dGV4dCZ0ZXh0PVlvdXIlMjBUZXh0Cgp0eXBlID0+IHRleHQKdGV4dCA9PiB5b3VyIHRleHQ=')
-            }]).then(function () {
-                liff.closeWindow();
-            });
-        });
-        document.getElementById('imagex').addEventListener('click', function () {
-            liff.sendMessages([{
-                type: 'text',
-                text: atob('bGluZTovL2FwcC8xNjAyNjg3MzA4LUdYcTRWdms5P3R5cGU9aW1hZ2UmaW1nPWh0dHBzOi8vd2FsbHBhcGVyc3R1ZGlvMTAuY29tL3N0YXRpYy93cGRiL3dhbGxwYXBlcnMvMTAwMHg1NjMvMTY4ODkxLmpwZwoKdHlwZSA9PiBpbWFnZQppbWcgPT4gTGluayAobXVzdCBiZSBIVFRQUyk=')
-            }]).then(function () {
-                liff.closeWindow();
-            });
-        });
-        document.getElementById('videox').addEventListener('click', function () {
-            liff.sendMessages([{
-                type: 'text',
-                text: atob('bGluZTovL2FwcC8xNjAyNjg3MzA4LUdYcTRWdms5P3R5cGU9dmlkZW8mb2N1PWh0dHBzOi8vdGlueXVybC5jb20veThvZzNvcjUmcGl1PWh0dHBzOi8vaW1hZ2VzNi5hbHBoYWNvZGVycy5jb20vNzEwL3RodW1iLTM1MC03MTAxMzIucG5nCgp0eXBlID0+IHZpZGVvCm9jdSA9PiB2aWRlbyB1cmwKcGl1ID0+IHByZXZpZXcgaW1hZ2U=')
-            }]).then(function () {
-                liff.closeWindow();
-            });
-        });
-        document.getElementById('audiox').addEventListener('click', function () {
-            liff.sendMessages([{
-                type: 'text',
-                text: atob('bGluZTovL2FwcC8xNjAyNjg3MzA4LUdYcTRWdms5P3R5cGU9YXVkaW8mbGluaz1odHRwczovL3BsYXRlbGV0cy5mdW4vcHVibGljL3NvdW5kcy9tdXNpYy5tcDM=')
-            }]).then(function () {
-                liff.closeWindow();
-            });
-        });
-        document.getElementById('stickerx').addEventListener('click', function () {
-            liff.sendMessages([{
-                type: 'text',
-                text: atob('V2l0aCBBbmltYXRpb246CmxpbmU6Ly9hcHAvMTYwMjY4NzMwOC1HWHE0VnZrOT90eXBlPXN0aWNrZXImc3RrPWFuaW0mc2lkPTMyMTI4MjMxJnBrZz0zMDk5MzEyCgpObyBBbmltYXRpb246CmxpbmU6Ly9hcHAvMTYwMjY4NzMwOC1HWHE0VnZrOT90eXBlPXN0aWNrZXImc3RrPW5vYW5pbSZzaWQ9MzIxMjgyMzEmcGtnPTMwOTkzMTIKCnR5cGUgPT4gc3RpY2tlcgpzdGsgPT4gYW5pbSAvIG5vYW5pbQpzaWQgPT4gc3RpY2tlciBpZApwa2cgPT4gcGFja2FnZXMgaWQ=')
-            }]).then(function () {
-                liff.closeWindow();
-            });
-        });
+/**
+* Check if myLiffId is null. If null do not initiate liff.
+* @param {string} myLiffId The LIFF ID of the selected element
+*/
+function initializeLiffOrDie(myLiffId) {
+    if (!myLiffId) {
+        document.getElementById("liffAppContent").classList.add('hidden');
+        document.getElementById("liffIdErrorMessage").classList.remove('hidden');
     } else {
-        makeText();
-        makeImage();
-        makeVideo();
-        makeAudio();
-        makeSticker();
-        meProfile();
+        initializeLiff(myLiffId);
     }
-    }
-
-function getParameterByName(name, url) {
-    if (!url) url = window.location.href;
-    name = name.replace(/[\[\]]/g, '\\$&');
-    var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
-        results = regex.exec(url);
-    if (!results) return null;
-    if (!results[2]) return '';
-    return decodeURIComponent(results[2].replace(/\+/g, ' '));
 }
-function getProfile(){
-    liff.getProfile().then(function (profile) {
-        document.getElementById('userid').textContent = 'Hai  ' + profile.displayName;
-        document.getElementById('main').src = profile.pictureUrl;        
-        document.getElementById('close').addEventListener('click', function () {
-            liff.closeWindow();
+
+/**
+* Initialize LIFF
+* @param {string} myLiffId The LIFF ID of the selected element
+*/
+function initializeLiff(myLiffId) {
+    liff
+        .init({
+            liffId: myLiffId
+        })
+        .then(() => {
+            // start to use LIFF's api
+            initializeApp();
+        })
+        .catch((err) => {
+            document.getElementById("liffAppContent").classList.add('hidden');
+            document.getElementById("liffInitErrorMessage").classList.remove('hidden');
+        });
+}
+
+/**
+ * Initialize the app by calling functions handling individual app components
+ */
+function initializeApp() {
+    displayLiffData();
+    displayIsInClientInfo();
+    registerButtonHandlers();
+
+    // check if the user is logged in/out, and disable inappropriate button
+    if (liff.isLoggedIn()) {
+        document.getElementById('liffLoginButton').disabled = true;
+    } else {
+        document.getElementById('liffLogoutButton').disabled = true;
+    }
+}
+
+/**
+* Display data generated by invoking LIFF methods
+*/
+function displayLiffData() {
+    document.getElementById('browserLanguage').textContent = liff.getLanguage();
+    document.getElementById('sdkVersion').textContent = liff.getVersion();
+    document.getElementById('lineVersion').textContent = liff.getLineVersion();
+    document.getElementById('isInClient').textContent = liff.isInClient();
+    document.getElementById('isLoggedIn').textContent = liff.isLoggedIn();
+    document.getElementById('deviceOS').textContent = liff.getOS();
+}
+
+/**
+* Toggle the login/logout buttons based on the isInClient status, and display a message accordingly
+*/
+function displayIsInClientInfo() {
+    if (liff.isInClient()) {
+        document.getElementById('liffLoginButton').classList.toggle('hidden');
+        document.getElementById('liffLogoutButton').classList.toggle('hidden');
+        document.getElementById('isInClientMessage').textContent = 'You are opening the app in the in-app browser of LINE.';
+    } else {
+        document.getElementById('isInClientMessage').textContent = 'You are opening the app in an external browser.';
+        document.getElementById('shareTargetPicker').classList.toggle('hidden');
+    }
+}
+
+/**
+* Register event handlers for the buttons displayed in the app
+*/
+function registerButtonHandlers() {
+    // openWindow call
+    document.getElementById('openWindowButton').addEventListener('click', function() {
+        liff.openWindow({
+            url: 'https://line.me',
+            external: true
         });
     });
-}
 
-function makeText(){
-    var tipe = getParameterByName('type');
-    if (tipe === 'text') {
-        liff.sendMessages([{
-            type: 'text',
-            text: getParameterByName('text')
-        }]).then(function () {
-            liff.closeWindow();
-        });
-    }
-}
-
-function makeImage(){
-    var tipe = getParameterByName('type');
-    if (tipe === 'image') {
-        liff.sendMessages([{
-            type: 'image',
-            originalContentUrl: getParameterByName('img'),
-            previewImageUrl: getParameterByName('img')
-        }]).then(function () {
-            liff.closeWindow();
-        });
-    }
-}
-
-function makeVideo(){
-    var tipe = getParameterByName('type');
-    if (tipe === 'video') {
-        liff.sendMessages([{
-            type: 'video',
-            originalContentUrl: getParameterByName('ocu'),
-            previewImageUrl: getParameterByName('piu')
-        }]).then(function () {
-            liff.closeWindow();
-        });
-    }
-}
-
-function makeAudio(){
-    var tipe = getParameterByName('type');
-    if (tipe === 'audio') {
-        liff.sendMessages([{
-            type: 'audio',
-            originalContentUrl: getParameterByName('link'),
-            duration: 60000
-        }]).then(function () {
-            liff.closeWindow();
-        });
-    }
-}
-
-function makeSticker(){
-    var tipe = getParameterByName('type');
-    if (tipe === 'sticker') {
-        var stk = getParameterByName('stk');
-        var sid = getParameterByName('sid');
-        var pkg = getParameterByName('pkg');
-        var ep = '';
-        if (stk === 'anim') {
-            ep = "/IOS/sticker_animation@2x.png";
+    // closeWindow call
+    document.getElementById('closeWindowButton').addEventListener('click', function() {
+        if (!liff.isInClient()) {
+            sendAlertIfNotInClient();
         } else {
-            ep = "/IOS/sticker@2x.png";
-        }
-        liff.sendMessages([{
-          type: "template",
-          altText: "Sticker",
-          template: {
-             type: "image_carousel",
-             columns: [{
-                 imageUrl: "https://stickershop.line-scdn.net/stickershop/v1/sticker/"+sid+ep,
-                 action: {
-                     type: "uri",
-                     uri: "line://shop/sticker/detail/"+pkg}}
-                          ]
-                        }
-        }]).then(function () {
             liff.closeWindow();
-        });
-    }
-}
+        }
+    });
 
-function meProfile(){
-    var tipe = getParameterByName('type');
-    liff.getProfile().then(function (prof) {
-        var stat = prof.statusMessage;
-        if (stat == null) {
-            var stat = " - ParazitStore";
-        }
-        if (stat.length > 60) {
-            var stat = "Status Message is to long! Max 60 words";
-        }
-        if (tipe === 'profile') {
+    // sendMessages call
+    document.getElementById('sendMessageButton').addEventListener('click', function() {
+        if (!liff.isInClient()) {
+            sendAlertIfNotInClient();
+        } else {
             liff.sendMessages([{
-                type: "template",
-                altText: "Profile "+prof.displayName,
-                template: {
-                    type: "buttons",
-                    thumbnailImageUrl: prof.pictureUrl,
-                    imageAspectRatio: "square",
-                    imageSize: "cover",
-                    title: prof.displayName,
-                    text: stat,
-                    actions: [
-                        {
-                            type:"uri",
-                            label:"Me",
-                            uri:"line://app/1655216205-OJJXmxyN?type=profile"
-                        }
-                    ]
-                }
-            }]).then(function () {
-                liff.closeWindow();
+                'type': 'text',
+                'text': "You've successfully sent a message! Hooray!"
+            }]).then(function() {
+                window.alert('Message sent');
+            }).catch(function(error) {
+                window.alert('Error sending message: ' + error);
             });
         }
     });
+
+    // get access token
+    document.getElementById('getAccessToken').addEventListener('click', function() {
+        if (!liff.isLoggedIn() && !liff.isInClient()) {
+            alert('To get an access token, you need to be logged in. Please tap the "login" button below and try again.');
+        } else {
+            const accessToken = liff.getAccessToken();
+            document.getElementById('accessTokenField').textContent = accessToken;
+            toggleAccessToken();
+        }
+    });
+
+    // get profile call
+    document.getElementById('getProfileButton').addEventListener('click', function() {
+        liff.getProfile().then(function(profile) {
+            document.getElementById('userIdProfileField').textContent = profile.userId;
+            document.getElementById('displayNameField').textContent = profile.displayName;
+
+            const profilePictureDiv = document.getElementById('profilePictureDiv');
+            if (profilePictureDiv.firstElementChild) {
+                profilePictureDiv.removeChild(profilePictureDiv.firstElementChild);
+            }
+            const img = document.createElement('img');
+            img.src = profile.pictureUrl;
+            img.alt = 'Profile Picture';
+            profilePictureDiv.appendChild(img);
+
+            document.getElementById('statusMessageField').textContent = profile.statusMessage;
+            toggleProfileData();
+        }).catch(function(error) {
+            window.alert('Error getting profile: ' + error);
+        });
+    });
+
+    document.getElementById('shareTargetPicker').addEventListener('click', function () {
+        if (liff.isApiAvailable('shareTargetPicker')) {
+            liff.shareTargetPicker([{
+                'type': 'text',
+                'text': 'Hello, World!'
+            }]).then(
+                document.getElementById('shareTargetPickerMessage').textContent = "Share target picker was launched."
+            ).catch(function (res) {
+                document.getElementById('shareTargetPickerMessage').textContent = "Failed to launch share target picker.";
+            });
+        } else {
+            document.getElementById('shareTargetPickerMessage').innerHTML = "<div>Share target picker unavailable.<div><div>This is possibly because you haven't enabled the share target picker on <a href='https://developers.line.biz/console/'>LINE Developers Console</a>.</div>";
+        }
+    });
+
+    // login call, only when external browser is used
+    document.getElementById('liffLoginButton').addEventListener('click', function() {
+        if (!liff.isLoggedIn()) {
+            // set `redirectUri` to redirect the user to a URL other than the front page of your LIFF app.
+            liff.login();
+        }
+    });
+
+    // logout call only when external browse
+    document.getElementById('liffLogoutButton').addEventListener('click', function() {
+        if (liff.isLoggedIn()) {
+            liff.logout();
+            window.location.reload();
+        }
+    });
+}
+
+/**
+* Alert the user if LIFF is opened in an external browser and unavailable buttons are tapped
+*/
+function sendAlertIfNotInClient() {
+    alert('This button is unavailable as LIFF is currently being opened in an external browser.');
+}
+
+/**
+* Toggle access token data field
+*/
+function toggleAccessToken() {
+    toggleElement('accessTokenData');
+}
+
+/**
+* Toggle profile info field
+*/
+function toggleProfileData() {
+    toggleElement('profileInfo');
+}
+
+/**
+* Toggle specified element
+* @param {string} elementId The ID of the selected element
+*/
+function toggleElement(elementId) {
+    const elem = document.getElementById(elementId);
+    if (elem.offsetWidth > 0 && elem.offsetHeight > 0) {
+        elem.style.display = 'none';
+    } else {
+        elem.style.display = 'block';
+    }
 }
